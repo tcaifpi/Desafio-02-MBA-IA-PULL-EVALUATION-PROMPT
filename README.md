@@ -92,3 +92,5 @@ C) Como Executar
    Bash
 
    python src/evaluate.py# Desafio-02-MBA-IA-PULL-EVALUATION-PROMPT
+# Desafio-02-MBA-IA-PULL-EVALUATION-PROMPT
+# Desafio-02-MBA-IA-PULL-EVALUATION-PROMPT
