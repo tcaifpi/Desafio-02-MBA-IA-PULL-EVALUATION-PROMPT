@@ -1,56 +1,42 @@
-"""
-Script para fazer push de prompts otimizados ao LangSmith Prompt Hub.
-
-Este script:
-1. Lê os prompts otimizados de prompts/bug_to_user_story_v2.yml
-2. Valida os prompts
-3. Faz push PÚBLICO para o LangSmith Hub
-4. Adiciona metadados (tags, descrição, técnicas utilizadas)
-
-SIMPLIFICADO: Código mais limpo e direto ao ponto.
-"""
-
 import os
-import sys
 from dotenv import load_dotenv
-from langchain import hub
-from langchain_core.prompts import ChatPromptTemplate
-from utils import load_yaml, check_env_vars, print_section_header
+from langsmith import Client
+from langchain_core.prompts import PromptTemplate
 
 load_dotenv()
 
+def push_to_hub():
+    client = Client()
+    
+    # IMPORTANTE: Use apenas o nome do prompt, SEM prefixos ou IDs longos.
+    # O LangSmith usará automaticamente a conta dona da LANGSMITH_API_KEY.
+    repo_name = "bug_to_user_story_v2" 
+    
+    template = """Converta o BUG REPORT em uma User Story técnica.
+    
+### REGRAS:
+- Inicie DIRETAMENTE com "**User Story**: Como..."
+- NÃO use saudações ou introduções.
+- Seja técnico e direto.
 
-def push_prompt_to_langsmith(prompt_name: str, prompt_data: dict) -> bool:
-    """
-    Faz push do prompt otimizado para o LangSmith Hub (PÚBLICO).
+### FORMATO:
+**User Story**: Como [persona], eu quero [ação] para que [valor].
+**Critérios de Aceite**:
+- [Critério 1]
+- [Critério 2]
 
-    Args:
-        prompt_name: Nome do prompt
-        prompt_data: Dados do prompt
+BUG REPORT:
+{bug_report}"""
 
-    Returns:
-        True se sucesso, False caso contrário
-    """
-    ...
-
-
-def validate_prompt(prompt_data: dict) -> tuple[bool, list]:
-    """
-    Valida estrutura básica de um prompt (versão simplificada).
-
-    Args:
-        prompt_data: Dados do prompt
-
-    Returns:
-        (is_valid, errors) - Tupla com status e lista de erros
-    """
-    ...
-
-
-def main():
-    """Função principal"""
-    ...
-
+    prompt_obj = PromptTemplate.from_template(template)
+    
+    print(f"🚀 Enviando prompt diretamente para o seu Hub...")
+    try:
+        # Enviamos apenas o nome. A biblioteca cuida do tenant via API KEY.
+        client.push_prompt(repo_name, object=prompt_obj)
+        print(f"✅ Sucesso! Prompt publicado como: {repo_name}")
+    except Exception as e:
+        print(f"❌ Erro ao subir: {e}")
 
 if __name__ == "__main__":
-    sys.exit(main())
+    push_to_hub()
